@@ -1,0 +1,82 @@
+name: Build FFGL plugin (Windows x64)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # create the GitHub Release (only on main, see the last step)
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Fetch Resolume FFGL SDK (pinned commit)
+        shell: bash
+        run: |
+          git clone https://github.com/resolume/ffgl.git ffgl-sdk
+          git -C ffgl-sdk checkout 5b6e07840277df9ec35a228b9eb067636316350f
+
+      - name: Verify release manifest (no mixed source versions)
+        run: python tools/verify_release.py
+
+      - name: Regenerate shader + parameter sources
+        run: |
+          python tools/gen_shader.py
+          python tools/embed_panel.py
+
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DFFGL_ROOT="${{ github.workspace }}/ffgl-sdk"
+
+      - name: Build (Release)
+        run: cmake --build build --config Release --parallel
+
+      - name: Test HTTP panel and lifecycle
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Test browser communication logic
+        run: node tests/test_frontend.mjs build/Release/panel_harness.exe
+
+      - name: Test browser preview lifecycle
+        run: node tests/test_preview_lifecycle.mjs
+
+      - name: Verify the DLL (x64, exports plugMain)
+        run: |
+          pip install pefile
+          python tools/check_dll.py build/Release/BG-STUDIO-SOUZ.dll
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BG-STUDIO-SOUZ-win64
+          path: build/Release/BG-STUDIO-SOUZ.dll
+          if-no-files-found: error
+
+      # Release with the ready DLL whenever VERSION changes on main. Fixed download link:
+      # https://github.com/${{ github.repository }}/releases/latest/download/BG-STUDIO-SOUZ.dll
+      - name: Publish release when VERSION changes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(tr -d '\r\n' < VERSION)"
+          tag="v${version}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Release $tag already exists; nothing to publish."
+            exit 0
+          fi
+          notes="$(awk -v v="# v${version}" 'index($0,v)==1{f=1;next} /^#+ /{if(f)exit} f' CHANGELOG.md)"
+          gh release create "$tag" build/Release/BG-STUDIO-SOUZ.dll \
+            --target "$GITHUB_SHA" --title "Souz Content-BG $version" --latest \
+            --notes "${notes:-Souz Content-BG $version}"

@@ -1,0 +1,17 @@
+SOUZ CONTENT BG v1.8.0
+
+Pacote completo: 32 engines, 16 paletas e painel enviado com temas claro/escuro.
+
+TESTAR AGORA
+Extraia o ZIP e abra ABRIR-PAINEL.html no Chrome ou Edge. Clique em Ativar preview. Nesse modo o painel funciona localmente: não controla o Resolume.
+
+USAR NO RESOLUME
+Este pacote NÃO inclui DLL compilada. Para gerar a DLL, use o workflow .github/workflows incluído ou build_windows.bat com Visual Studio 2022 (C++), CMake, Python 3 e Git instalados.
+No GitHub, os arquivos CMakeLists.txt, VERSION, src, web e .github devem ficar na raiz do repositório. Após o build, baixe o artifact SouzContent-BG-v1.8.0-win64.
+Instale BackgroundGen.dll e carregue Souz Content-BG em Sources > FFGL. Clique em Abrir painel. Para tablet/celular, use Conectar tablet e o pareamento na mesma rede.
+
+O plugin é FF_SOURCE, mantém a identidade ABGE e os parâmetros existentes. A API/painel informa 1.8.0; a estrutura FFGL informa major 1/minor 8.
+
+VALIDAÇÃO
+Aprovados: comunicação HTTP, parâmetros, paletas, abas, pareamento, múltiplas instâncias, temas e persistência; ciclo de vida do preview; 32 shaders ES; equivalência das imagens do preview com o shader nativo.
+A DLL Windows não foi compilada ou executada no Resolume neste ambiente. A inspeção visual em navegador real não pôde ser executada aqui.

@@ -1,0 +1,16 @@
+{
+  "name": "souz-bg-studio-vmix",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node app/server.mjs",
+    "test": "node --test app/tests/*.test.mjs",
+    "test:ndi": "node app/ndi/smoke.mjs",
+    "package": "python tools/build_release.py",
+    "package:windows": "python tools/build_windows.py"
+  }
+}

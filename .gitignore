@@ -1,0 +1,8 @@
+node_modules/
+data/
+*.log
+app/ndi/python-libs/
+__pycache__/
+dist/
+build/
+/Souz-BG-Studio-main.zip

@@ -1,0 +1,22 @@
+[
+  {
+    "file": "node-v22.23.5-win-x64.zip",
+    "url": "https://nodejs.org/dist/v22.23.5/node-v22.23.5-win-x64.zip",
+    "sha256": "4a191082e9706866830379d577d2cc8a50c776fcd9436a8d061b063ed0d9a0e3"
+  },
+  {
+    "file": "python-3.12.10-embed-amd64.zip",
+    "url": "https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip",
+    "sha256": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3"
+  },
+  {
+    "file": "inno-6.4.3.exe",
+    "url": "https://github.com/jrsoftware/issrc/releases/download/is-6_4_3/innosetup-6.4.3.exe",
+    "sha256": "f3c42116542c4cc57263c5ba6c4feabfc49fe771f2f98a79d2f7628b8762723b"
+  },
+  {
+    "file": "NDI-Runtime.exe",
+    "url": "https://ndi.link/NDIRedistV6",
+    "sha256": "7ee73eedb56402bca5100868353dbab4e944b6c37d2d9881580698a3b61346cd"
+  }
+]

@@ -1,0 +1,17 @@
+const root=document.createElement('section');
+root.innerHTML=`<h2>Saída NDI</h2><p>Transmita o background pronto para vMix ou OBS na rede local.</p><label>Nome da fonte <input id="ndi-name" value="Souz BG Studio" maxlength="100"></label><label>Resolução <select id="ndi-size"><option value="1920x1080">1920 × 1080</option><option value="1280x720">1280 × 720</option></select></label><label>FPS <select id="ndi-fps"><option>30</option><option>25</option><option>50</option><option>60</option></select></label><button id="ndi-start">Iniciar NDI</button><button id="ndi-stop">Parar NDI</button><pre id="ndi-state">Consultando emissor…</pre>`;
+document.body.append(root);
+const token=document.querySelector('#output').value.split('#')[1],headers={'X-Souz-Token':token,'Content-Type':'application/json'};
+const start=root.querySelector('#ndi-start'),stop=root.querySelector('#ndi-stop'),status=root.querySelector('#ndi-state');let submitting=false;
+const save=document.createElement('button');save.textContent='Salvar configuração';root.insertBefore(save,status);
+const note=document.createElement('p');note.setAttribute('role','status');root.append(note);
+async function request(path,data){const r=await fetch(path,{method:data?'POST':'GET',headers,body:data?JSON.stringify(data):undefined,signal:AbortSignal.timeout(40000)});const body=await r.json();if(!r.ok)throw Error(body.error);return body;}
+function render(s){const active=['starting','running'].includes(s.status);start.disabled=save.disabled=submitting||active;stop.disabled=submitting||!active;for(const input of root.querySelectorAll('input,select'))input.disabled=submitting||active;
+ status.textContent=s.status==='running'?`${s.name} · ${s.width} × ${s.height}\n${s.actualFps} FPS medidos (meta ${s.fps}) · ${s.frames} quadros enviados · ${s.connections} receptor(es)`:s.status==='starting'?'Preparando renderização e fonte NDI…':s.status==='error'?'NDI interrompido: '+s.error:'NDI parado';}
+async function poll(){try{render(await request('/api/ndi/status'));}catch(e){status.textContent=e.message;}finally{setTimeout(poll,1000);}}
+start.onclick=async()=>{submitting=true;start.disabled=stop.disabled=true;status.textContent='Iniciando NDI…';try{const [width,height]=root.querySelector('#ndi-size').value.split('x').map(Number);render(await request('/api/ndi/start',{name:root.querySelector('#ndi-name').value,width,height,fps:Number(root.querySelector('#ndi-fps').value)}));}catch(e){status.textContent=e.message;}finally{submitting=false;}};
+stop.onclick=async()=>{submitting=true;try{render(await request('/api/ndi/stop',{}));}catch(e){status.textContent=e.message;}finally{submitting=false;}};
+function options(){const [width,height]=root.querySelector('#ndi-size').value.split('x').map(Number);return {name:root.querySelector('#ndi-name').value,width,height,fps:Number(root.querySelector('#ndi-fps').value)};}
+save.onclick=async()=>{save.disabled=true;try{await request('/api/settings',{ndi:options()});note.textContent='Configuração salva. O NDI será iniciado somente quando você clicar em Iniciar.';}catch(e){note.textContent=e.message;}finally{save.disabled=false;}};
+try{const {ndi,warning}=await request('/api/settings');root.querySelector('#ndi-name').value=ndi.name;const size=root.querySelector('#ndi-size'),value=ndi.width+'x'+ndi.height;if(![...size.options].some(o=>o.value===value))size.append(new Option(value,value));size.value=value;root.querySelector('#ndi-fps').value=String(ndi.fps);if(warning)note.textContent=warning;}catch(e){note.textContent=e.message;}
+poll();

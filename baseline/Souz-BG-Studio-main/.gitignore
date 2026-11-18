@@ -1,0 +1,12 @@
+build/
+build-mingw/
+ffgl-sdk
+tools/out/
+__pycache__/
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials

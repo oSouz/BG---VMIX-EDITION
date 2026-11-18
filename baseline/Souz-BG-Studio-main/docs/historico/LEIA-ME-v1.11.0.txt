@@ -1,0 +1,24 @@
+SOUZ BGEN STUDIO — v1.11.0
+
+Nota histórica: texto original do pacote ZIP 1.11.0. Desde a v1.11.1 esse código está neste repositório (veja README.md); a DLL não vem mais pronta, é gerada pelo GitHub Actions.
+
+DLL compilada para Windows x64 / FFGL SOURCE.
+
+1. Feche o Resolume.
+2. Faça backup da DLL anterior.
+3. Substitua a Souz BG-Studio.dll na pasta de plugins FFGL já usada pelo Resolume. Evite duas cópias do plugin com a mesma identidade ABGE.
+4. Abra o Resolume, carregue Souz Content-BG como Source e clique em Abrir painel.
+
+Não é necessário compilar: use DLL/Souz BG-Studio.dll.
+
+ABRIR-PAINEL.html: demonstração local; não controla o LED. Para controlar a DLL, abra o painel pelo plugin.
+CATALOGO.html: catálogo estático com miniaturas reais das 105 engines.
+
+PGM altera o ao vivo. PVW prepara uma cena isolada. TAKE envia PVW para PGM com a duração de fade selecionada.
+Todas as 21 opções de parâmetros anteriores foram preservadas, inclusive posição X/Y.
+
+COR: nas novas engines, Black To preto e White To branco preservam as cores originais. Uma paleta ou tint personalizado aplica o mapeamento de luminância existente.
+
+As 73 novas engines são interpretações procedurais das referências, não reprodução dos vídeos/imagens.
+
+Compilação e testes automatizados realizados em Linux/Mesa. Uso real em Windows/Resolume e desempenho no LED ainda precisam de validação no equipamento.
